@@ -1,18 +1,18 @@
 @echo off
-title Hesett Box Setup - Beautiful Web Interface
+title Hesett Box Setup - Native Desktop Application
 color 0A
 
 echo.
 echo ========================================
-echo    🚀 Hesett Box Beautiful Setup
+echo    🚀 Hesett Box Native Desktop Setup
 echo ========================================
 echo.
 echo Welcome to the Hesett Box Setup Wizard!
 echo.
-echo 🎯 This will open a beautiful web interface in your browser.
-echo 💡 No technical knowledge required - just follow the beautiful interface!
+echo 🎯 This will open a native desktop application.
+echo 💡 No terminal, no browser - just a beautiful desktop app!
 echo.
-echo 🌐 Opening beautiful setup interface...
+echo 🖥️ Opening native desktop application...
 echo.
 
 :: Create setup directory
@@ -22,52 +22,106 @@ if exist hesett_setup (
 mkdir hesett_setup
 cd hesett_setup
 
-:: Create package.json
-echo 📦 Creating setup package...
+:: Create package.json for Electron app
+echo 📦 Creating native desktop application...
 (
 echo {
 echo   "name": "hesett-setup",
 echo   "version": "2.0.0",
-echo   "description": "Hesett Box Professional Setup",
-echo   "main": "setup_server.js",
+echo   "description": "Hesett Box Professional Setup - Native Desktop App",
+echo   "main": "main.js",
 echo   "scripts": {
-echo     "start": "node setup_server.js"
+echo     "start": "electron .",
+echo     "build": "electron-builder"
 echo   },
 echo   "dependencies": {
-echo     "express": "^4.18.2",
-echo     "cors": "^2.8.5"
+echo     "electron": "^28.0.0"
+echo   },
+echo   "devDependencies": {
+echo     "electron-builder": "^24.0.0"
+echo   },
+echo   "build": {
+echo     "appId": "com.hesett.setup",
+echo     "productName": "Hesett Box Setup",
+echo     "directories": {
+echo       "output": "dist"
+echo     },
+echo     "files": [
+echo       "main.js",
+echo       "index.html",
+echo       "package.json"
+echo     ],
+echo     "win": {
+echo       "target": "nsis",
+echo       "icon": "icon.ico"
+echo     }
 echo   }
 echo }
 ) > package.json
 
-:: Create setup server
-echo 🔧 Creating beautiful setup server...
+:: Create Electron main process
+echo 🔧 Creating native desktop application...
 (
-echo const express = require^('express'^);
-echo const cors = require^('cors'^);
+echo const { app, BrowserWindow, ipcMain } = require^('electron'^);
 echo const path = require^('path'^);
 echo.
-echo const app = express^(^);
-echo const PORT = 8080;
+echo let mainWindow;
 echo.
-echo app.use^(cors^(^)^);
-echo app.use^(express.static^('public'^)^);
-echo app.use^(express.json^(^)^);
+echo function createWindow^(^) {
+echo   mainWindow = new BrowserWindow^({
+echo     width: 1200,
+echo     height: 800,
+echo     minWidth: 1000,
+echo     minHeight: 700,
+echo     webPreferences: {
+echo       nodeIntegration: true,
+echo       contextIsolation: false
+echo     },
+echo     icon: path.join^(__dirname, 'icon.ico'^),
+echo     titleBarStyle: 'default',
+echo     show: false,
+echo     backgroundColor: '#667eea'
+echo   }^);
 echo.
-echo app.get^('/', ^(req, res^) =^> {
-echo   res.sendFile^(path.join^(__dirname, 'public', 'index.html'^)^);
+echo   mainWindow.loadFile^('index.html'^);
+echo.
+echo   mainWindow.once^('ready-to-show', ^(^) =^> {
+echo     mainWindow.show^(^);
+echo     mainWindow.focus^(^);
+echo   }^);
+echo.
+echo   mainWindow.on^('closed', ^(^) =^> {
+echo     mainWindow = null;
+echo   }^);
+echo }
+echo.
+echo app.whenReady^(^).then^(createWindow^);
+echo.
+echo app.on^('window-all-closed', ^(^) =^> {
+echo   if ^(process.platform !== 'darwin'^) {
+echo     app.quit^(^);
+echo   }
 echo }^);
 echo.
-echo app.listen^(PORT, ^(^) =^> {
-echo   console.log^(`🚀 Beautiful Hesett Setup running on http://localhost:${PORT}`^);
+echo app.on^('activate', ^(^) =^> {
+echo   if ^(BrowserWindow.getAllWindows^(^).length === 0^) {
+echo     createWindow^(^);
+echo   }
 echo }^);
-) > setup_server.js
+echo.
+echo // Handle setup progress
+echo ipcMain.handle^('setup-progress', async ^(event, step^) =^> {
+echo   return { status: 'success', step: step };
+echo }^);
+echo.
+echo // Handle setup completion
+echo ipcMain.handle^('setup-complete', async ^(event^) =^> {
+echo   return { status: 'complete' };
+echo }^);
+) > main.js
 
-:: Create public directory
-mkdir public
-
-:: Create beautiful HTML interface
-echo 🌐 Creating stunning setup interface...
+:: Create beautiful HTML interface for desktop app
+echo 🌐 Creating stunning desktop interface...
 (
 echo ^<!DOCTYPE html^>
 echo ^<html lang="en"^>
@@ -83,6 +137,7 @@ echo             background: linear-gradient^(135deg, #667eea 0%%, #764ba2 100%%
 echo             min-height: 100vh; 
 echo             color: white; 
 echo             overflow-x: hidden;
+echo             user-select: none;
 echo         }
 echo         .container { 
 echo             max-width: 1000px; 
@@ -382,9 +437,22 @@ echo             width: 0%%;
 echo             transition: width 0.5s ease;
 echo             border-radius: 4px;
 echo         }
+echo         .title-bar {
+echo             -webkit-app-region: drag;
+echo             height: 32px;
+echo             background: rgba^(255,255,255,0.1^);
+echo             backdrop-filter: blur^(10px^);
+echo             border-bottom: 1px solid rgba^(255,255,255,0.2^);
+echo             display: flex;
+echo             align-items: center;
+echo             justify-content: center;
+echo             color: white;
+echo             font-weight: 500;
+echo         }
 echo     ^</style^>
 echo ^</head^>
 echo ^<body^>
+echo     ^<div class="title-bar"^>🚀 Hesett Box Professional Setup^</div^>
 echo     ^<div class="auto-progress" id="auto-progress" style="display: none;"^>
 echo         ^<h4^>🚀 Auto-Setup Progress^</h4^>
 echo         ^<div class="progress"^>
@@ -466,6 +534,7 @@ echo             ^</div^>
 echo         ^</div^>
 echo     ^</div^>
 echo     ^<script^>
+echo         const { ipcRenderer } = require^('electron'^);
 echo         let currentStep = 0;
 echo         const totalSteps = 4;
 echo         let autoProgressInterval;
@@ -606,6 +675,7 @@ echo                 updateProgress^(currentStep, 'test-progress-bar'^);
 echo.
 echo                 setTimeout^(^() =^> {
 echo                     document.getElementById^('completion'^).style.display = 'block';
+echo                     ipcRenderer.invoke^('setup-complete'^);
 echo                 }, 500^);
 echo             }, 1500^);
 echo         }
@@ -616,42 +686,35 @@ echo         };
 echo     ^</script^>
 echo ^</body^>
 echo ^</html^>
-) > public\index.html
+) > index.html
 
-:: Install dependencies silently
-echo 📦 Installing dependencies...
+:: Install Electron dependencies
+echo 📦 Installing Electron dependencies...
 npm install --silent --no-audit --no-fund >nul 2>&1
 
-:: Start the beautiful setup wizard
-echo 🚀 Starting beautiful setup wizard...
-start /B node setup_server.js
-
-:: Wait a moment for server to start
-timeout /t 1 /nobreak >nul
-
-:: Open browser immediately
-echo 🌐 Opening beautiful setup interface...
-start http://localhost:8080
+:: Start the native desktop application
+echo 🚀 Starting native desktop application...
+start /B npm start
 
 echo.
 echo ========================================
-echo    🎉 Beautiful Setup Started!
+echo    🎉 Native Desktop App Started!
 echo ========================================
 echo.
-echo ✅ Beautiful setup wizard is running on port 8080
-echo ✅ Browser should open automatically
-echo ✅ Stunning, modern interface
+echo ✅ Native desktop application is running
+echo ✅ Beautiful desktop window opened
+echo ✅ No terminal, no browser - just a native app!
 echo.
-echo 💡 This is a beautiful web-based setup wizard
-echo 💡 No technical knowledge required
-echo 💡 Modern, professional UI/UX
+echo 💡 This is a native desktop application
+echo 💡 Looks and feels like a real Windows app
+echo 💡 Professional desktop experience
 echo.
-echo Press any key to stop the server...
+echo Press any key to stop the application...
 pause >nul
 
-:: Kill the server process
-taskkill /f /im node.exe >nul 2>&1
+:: Kill the Electron process
+taskkill /f /im electron.exe >nul 2>&1
 echo.
-echo 🛑 Server stopped. Professional setup complete!
+echo 🛑 Application stopped. Professional setup complete!
 echo.
 pause

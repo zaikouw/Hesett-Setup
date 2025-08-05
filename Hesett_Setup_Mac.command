@@ -9,15 +9,15 @@ NC='\033[0m' # No Color
 clear
 echo -e "${BLUE}"
 echo "========================================"
-echo "   🚀 Hesett Box Beautiful Setup"
+echo "   🚀 Hesett Box Native Desktop Setup"
 echo "========================================"
 echo -e "${NC}"
 echo "Welcome to the Hesett Box Setup Wizard!"
 echo ""
-echo -e "${GREEN}🎯 This will open a beautiful web interface in your browser.${NC}"
-echo -e "${YELLOW}💡 No technical knowledge required - just follow the beautiful interface!${NC}"
+echo -e "${GREEN}🎯 This will open a native desktop application.${NC}"
+echo -e "${YELLOW}💡 No terminal, no browser - just a beautiful desktop app!${NC}"
 echo ""
-echo -e "${BLUE}🌐 Opening beautiful setup interface...${NC}"
+echo -e "${BLUE}🖥️ Opening native desktop application...${NC}"
 echo ""
 
 # Create setup directory
@@ -27,53 +27,107 @@ fi
 mkdir -p hesett_setup
 cd hesett_setup
 
-# Create package.json
-echo -e "${BLUE}📦 Creating setup package...${NC}"
+# Create package.json for Electron app
+echo -e "${BLUE}📦 Creating native desktop application...${NC}"
 cat > package.json << 'EOF'
 {
   "name": "hesett-setup",
   "version": "2.0.0",
-  "description": "Hesett Box Professional Setup",
-  "main": "setup_server.js",
+  "description": "Hesett Box Professional Setup - Native Desktop App",
+  "main": "main.js",
   "scripts": {
-    "start": "node setup_server.js"
+    "start": "electron .",
+    "build": "electron-builder"
   },
   "dependencies": {
-    "express": "^4.18.2",
-    "cors": "^2.8.5"
+    "electron": "^28.0.0"
+  },
+  "devDependencies": {
+    "electron-builder": "^24.0.0"
+  },
+  "build": {
+    "appId": "com.hesett.setup",
+    "productName": "Hesett Box Setup",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "main.js",
+      "index.html",
+      "package.json"
+    ],
+    "mac": {
+      "target": "dmg",
+      "icon": "icon.icns"
+    }
   }
 }
 EOF
 
-# Create setup server
-echo -e "${BLUE}🔧 Creating beautiful setup server...${NC}"
-cat > setup_server.js << 'EOF'
-const express = require('express');
-const cors = require('cors');
+# Create Electron main process
+echo -e "${BLUE}🔧 Creating native desktop application...${NC}"
+cat > main.js << 'EOF'
+const { app, BrowserWindow, ipcMain } = require('electron');
 const path = require('path');
 
-const app = express();
-const PORT = 8080;
+let mainWindow;
 
-app.use(cors());
-app.use(express.static('public'));
-app.use(express.json());
+function createWindow() {
+  mainWindow = new BrowserWindow({
+    width: 1200,
+    height: 800,
+    minWidth: 1000,
+    minHeight: 700,
+    webPreferences: {
+      nodeIntegration: true,
+      contextIsolation: false
+    },
+    icon: path.join(__dirname, 'icon.icns'),
+    titleBarStyle: 'hiddenInset',
+    show: false,
+    backgroundColor: '#667eea'
+  });
 
-app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+  mainWindow.loadFile('index.html');
+
+  mainWindow.once('ready-to-show', () => {
+    mainWindow.show();
+    mainWindow.focus();
+  });
+
+  mainWindow.on('closed', () => {
+    mainWindow = null;
+  });
+}
+
+app.whenReady().then(createWindow);
+
+app.on('window-all-closed', () => {
+  if (process.platform !== 'darwin') {
+    app.quit();
+  }
 });
 
-app.listen(PORT, () => {
-  console.log(`🚀 Beautiful Hesett Setup running on http://localhost:${PORT}`);
+app.on('activate', () => {
+  if (BrowserWindow.getAllWindows().length === 0) {
+    createWindow();
+  }
+});
+
+// Handle setup progress
+ipcMain.handle('setup-progress', async (event, step) => {
+  return { status: 'success', step: step };
+});
+
+// Handle setup completion
+ipcMain.handle('setup-complete', async (event) => {
+  return { status: 'complete' };
 });
 EOF
 
-# Create public directory
-mkdir -p public
-
-# Create beautiful HTML interface
-echo -e "${BLUE}🌐 Creating stunning setup interface...${NC}"
-cat > public/index.html << 'EOF'
+# Create beautiful HTML interface for desktop app
+echo -e "${BLUE}🌐 Creating stunning desktop interface...${NC}"
+cat > index.html << 'EOF'
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -88,6 +142,7 @@ cat > public/index.html << 'EOF'
             min-height: 100vh; 
             color: white; 
             overflow-x: hidden;
+            user-select: none;
         }
         .container { 
             max-width: 1000px; 
@@ -387,9 +442,22 @@ cat > public/index.html << 'EOF'
             transition: width 0.5s ease;
             border-radius: 4px;
         }
+        .title-bar {
+            -webkit-app-region: drag;
+            height: 32px;
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 500;
+        }
     </style>
 </head>
 <body>
+    <div class="title-bar">🚀 Hesett Box Professional Setup</div>
     <div class="auto-progress" id="auto-progress" style="display: none;">
         <h4>🚀 Auto-Setup Progress</h4>
         <div class="progress">
@@ -471,6 +539,7 @@ cat > public/index.html << 'EOF'
         </div>
     </div>
     <script>
+        const { ipcRenderer } = require('electron');
         let currentStep = 0;
         const totalSteps = 4;
         let autoProgressInterval;
@@ -611,6 +680,7 @@ cat > public/index.html << 'EOF'
 
                 setTimeout(() => {
                     document.getElementById('completion').style.display = 'block';
+                    ipcRenderer.invoke('setup-complete');
                 }, 500);
             }, 1500);
         }
@@ -623,43 +693,30 @@ cat > public/index.html << 'EOF'
 </html>
 EOF
 
-# Install dependencies silently
-echo -e "${BLUE}📦 Installing dependencies...${NC}"
+# Install Electron dependencies
+echo -e "${BLUE}📦 Installing Electron dependencies...${NC}"
 npm install --silent --no-audit --no-fund > /dev/null 2>&1
 
-# Start the beautiful setup wizard
-echo -e "${BLUE}🚀 Starting beautiful setup wizard...${NC}"
-node setup_server.js &
-SERVER_PID=$!
-
-# Wait a moment for server to start
-sleep 1
-
-# Open browser immediately
-echo -e "${BLUE}🌐 Opening beautiful setup interface...${NC}"
-if command -v open &> /dev/null; then
-    open http://localhost:8080
-elif command -v xdg-open &> /dev/null; then
-    xdg-open http://localhost:8080
-else
-    echo "Please open your browser and go to: http://localhost:8080"
-fi
+# Start the native desktop application
+echo -e "${BLUE}🚀 Starting native desktop application...${NC}"
+npm start &
+APP_PID=$!
 
 echo ""
 echo -e "${GREEN}========================================"
-echo "    🎉 Beautiful Setup Started!"
+echo "    🎉 Native Desktop App Started!"
 echo "========================================"
 echo -e "${NC}"
-echo "✅ Beautiful setup wizard is running on port 8080"
-echo "✅ Browser should open automatically"
-echo "✅ Stunning, modern interface"
+echo "✅ Native desktop application is running"
+echo "✅ Beautiful desktop window opened"
+echo "✅ No terminal, no browser - just a native app!"
 echo ""
-echo "💡 This is a beautiful web-based setup wizard"
-echo "💡 No technical knowledge required"
-echo "💡 Modern, professional UI/UX"
+echo "💡 This is a native desktop application"
+echo "💡 Looks and feels like a real Mac app"
+echo "💡 Professional desktop experience"
 echo ""
-echo -e "${YELLOW}Press Ctrl+C to stop the server...${NC}"
+echo -e "${YELLOW}Press Ctrl+C to stop the application...${NC}"
 
 # Wait for user to stop
-trap "echo ''; echo -e '${RED}🛑 Stopping server...${NC}'; kill $SERVER_PID 2>/dev/null; echo -e '${GREEN}✅ Server stopped. Professional setup complete!${NC}'; echo ''; exit 0" INT
+trap "echo ''; echo -e '${RED}🛑 Stopping application...${NC}'; kill $APP_PID 2>/dev/null; echo -e '${GREEN}✅ Application stopped. Professional setup complete!${NC}'; echo ''; exit 0" INT
 wait
