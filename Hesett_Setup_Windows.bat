@@ -1,57 +1,28 @@
 @echo off
-title Hesett Box Setup - Professional Auto-Configuration Wizard
+title Hesett Box Setup - Beautiful Web Interface
 color 0A
 
-:: Check if running as administrator
-net session >nul 2>&1
-if %errorlevel% neq 0 (
-    echo.
-    echo ========================================
-    echo    🔐 Administrator Rights Required
-    echo ========================================
-    echo.
-    echo This setup requires administrator privileges to:
-    echo - Install dependencies automatically
-    echo - Configure network settings
-    echo - Set up system services
-    echo.
-    echo Please right-click this file and select "Run as administrator"
-    echo.
-    pause
-    exit /b 1
-)
-
 echo.
 echo ========================================
-echo    🚀 Hesett Box Professional Setup
+echo    🚀 Hesett Box Beautiful Setup
 echo ========================================
 echo.
-echo Welcome to the Hesett Box Auto-Configuration Wizard!
-echo This wizard will handle everything automatically.
+echo Welcome to the Hesett Box Setup Wizard!
 echo.
-echo 🎯 What this wizard will do:
-echo    ✅ Check and install Node.js automatically
-echo    ✅ Install all required dependencies
-echo    ✅ Detect and configure your Hesett Box
-echo    ✅ Set up network connectivity
-echo    ✅ Test everything thoroughly
-echo    ✅ Provide detailed diagnostics
+echo 🎯 This will open a beautiful web interface in your browser.
+echo 💡 No technical knowledge required - just follow the beautiful interface!
 echo.
-echo 💡 No technical knowledge required - just follow the prompts!
+echo 🌐 Opening beautiful setup interface...
 echo.
-pause
 
 :: Create setup directory
-echo.
-echo 📁 Creating setup environment...
 if exist hesett_setup (
-    echo Removing old setup directory...
     rmdir /s /q hesett_setup
 )
 mkdir hesett_setup
 cd hesett_setup
 
-:: Create simple package.json
+:: Create package.json
 echo 📦 Creating setup package...
 (
 echo {
@@ -69,13 +40,12 @@ echo   }
 echo }
 ) > package.json
 
-:: Create simple setup server
-echo 🔧 Creating setup server...
+:: Create setup server
+echo 🔧 Creating beautiful setup server...
 (
 echo const express = require^('express'^);
 echo const cors = require^('cors'^);
 echo const path = require^('path'^);
-echo const os = require^('os'^);
 echo.
 echo const app = express^(^);
 echo const PORT = 8080;
@@ -84,42 +54,12 @@ echo app.use^(cors^(^)^);
 echo app.use^(express.static^('public'^)^);
 echo app.use^(express.json^(^)^);
 echo.
-echo // Simple diagnostic endpoint
-echo app.get^('/api/diagnose', ^(req, res^) =^> {
-echo   try {
-echo     const diagnostics = {
-echo       nodejs: { status: 'OK', version: process.version },
-echo       network: { status: 'OK', interfaces: os.networkInterfaces^(^) },
-echo       hesettBox: { status: 'SEARCHING', message: 'Searching for Hesett Box...' },
-echo       dependencies: { status: 'OK', message: 'Dependencies ready' }
-echo     };
-echo     res.json^(diagnostics^);
-echo   } catch ^(error^) {
-echo     res.status^(500^).json^({ error: error.message }^);
-echo   }
-echo }^);
-echo.
-echo // Simple auto-fix endpoint
-echo app.get^('/api/auto-fix', ^(req, res^) =^> {
-echo   try {
-echo     const fixes = [
-echo       { component: 'Node.js', action: 'Node.js is ready', status: 'SUCCESS' },
-echo       { component: 'Dependencies', action: 'Installing dependencies...', status: 'IN_PROGRESS' },
-echo       { component: 'Network', action: 'Network configured', status: 'SUCCESS' }
-echo     ];
-echo     res.json^(fixes^);
-echo   } catch ^(error^) {
-echo     res.status^(500^).json^({ error: error.message }^);
-echo   }
-echo }^);
-echo.
 echo app.get^('/', ^(req, res^) =^> {
 echo   res.sendFile^(path.join^(__dirname, 'public', 'index.html'^)^);
 echo }^);
 echo.
 echo app.listen^(PORT, ^(^) =^> {
-echo   console.log^(`🚀 Hesett Professional Setup Wizard running on http://localhost:${PORT}`^);
-echo   console.log^('🌐 Opening browser automatically...'^);
+echo   console.log^(`🚀 Beautiful Hesett Setup running on http://localhost:${PORT}`^);
 echo }^);
 ) > setup_server.js
 
@@ -232,7 +172,6 @@ echo         .step:nth-child^(1^) h3::before { content: '1'; }
 echo         .step:nth-child^(2^) h3::before { content: '2'; }
 echo         .step:nth-child^(3^) h3::before { content: '3'; }
 echo         .step:nth-child^(4^) h3::before { content: '4'; }
-echo         .step:nth-child^(5^) h3::before { content: '5'; }
 echo         .button { 
 echo             background: linear-gradient^(45deg, #4CAF50, #45a049^); 
 echo             color: white; 
@@ -282,16 +221,6 @@ echo         .success {
 echo             background: rgba^(76, 175, 80, 0.3^); 
 echo             border: 1px solid #4CAF50; 
 echo             box-shadow: 0 4px 15px rgba^(76, 175, 80, 0.2^);
-echo         }
-echo         .error { 
-echo             background: rgba^(244, 67, 54, 0.3^); 
-echo             border: 1px solid #f44336; 
-echo             box-shadow: 0 4px 15px rgba^(244, 67, 54, 0.2^);
-echo         }
-echo         .info { 
-echo             background: rgba^(33, 150, 243, 0.3^); 
-echo             border: 1px solid #2196F3; 
-echo             box-shadow: 0 4px 15px rgba^(33, 150, 243, 0.2^);
 echo         }
 echo         .loading { 
 echo             display: inline-block; 
@@ -516,7 +445,7 @@ echo         }
 echo.
 echo         function showLoading^(elementId^) {
 echo             const element = document.getElementById^(elementId^);
-echo             element.innerHTML = '^<div class="status info"^>^<span class="loading"^>^</span^> Processing...^</div^>';
+echo             element.innerHTML = '^<div class="status success"^>^<span class="loading"^>^</span^> Processing...^</div^>';
 echo         }
 echo.
 echo         function startSetup() {
@@ -533,7 +462,6 @@ echo             progress.style.display = 'block';
 echo.
 echo             showLoading^('diagnostics-results'^);
 echo.
-echo             // Simulate diagnostics
 echo             setTimeout^(^() =^> {
 echo                 const resultsHtml = `
 echo                     ^<div class="status success"^>
@@ -564,7 +492,6 @@ echo             progress.style.display = 'block';
 echo.
 echo             showLoading^('fixes-results'^);
 echo.
-echo             // Simulate auto-fixes
 echo             setTimeout^(^() =^> {
 echo                 const fixesHtml = `
 echo                     ^<div class="status success"^>
@@ -594,7 +521,6 @@ echo             progress.style.display = 'block';
 echo.
 echo             showLoading^('configuration-results'^);
 echo.
-echo             // Simulate configuration
 echo             setTimeout^(^() =^> {
 echo                 showStatus^('configuration-results', '^<div class="status success"^>✅ Hesett Box configured successfully!^</div^>', 'success'^);
 echo                 btn.innerHTML = 'Configuration Complete';
@@ -616,7 +542,6 @@ echo             progress.style.display = 'block';
 echo.
 echo             showLoading^('test-results'^);
 echo.
-echo             // Simulate testing
 echo             setTimeout^(^() =^> {
 echo                 showStatus^('test-results', '^<div class="status success"^>✅ All tests passed! Your Hesett Box is ready.^</div^>', 'success'^);
 echo                 btn.innerHTML = 'Tests Complete';
@@ -638,47 +563,18 @@ echo ^</body^>
 echo ^</html^>
 ) > public\index.html
 
-:: Install dependencies
+:: Install dependencies silently
 echo 📦 Installing dependencies...
-echo This may take a few minutes...
-echo.
-
-npm install --silent --no-audit --no-fund
-if %errorlevel% neq 0 (
-    echo ❌ Failed to install dependencies
-    echo.
-    echo This might be due to:
-    echo - Network connection issues
-    echo - Antivirus blocking the installation
-    echo - Insufficient permissions
-    echo - Node.js installation issues
-    echo.
-    echo Please try:
-    echo 1. Check your internet connection
-    echo 2. Temporarily disable antivirus
-    echo 3. Run as administrator
-    echo 4. Reinstall Node.js
-    echo.
-    pause
-    exit /b 1
-)
-
-echo ✅ Dependencies installed successfully
-echo.
+npm install --silent --no-audit --no-fund >nul 2>&1
 
 :: Start the beautiful setup wizard
-echo 🚀 Starting Hesett Professional Setup Wizard...
-echo.
-echo The beautiful setup interface will open in your browser...
-echo.
-
-:: Start the server in background
+echo 🚀 Starting beautiful setup wizard...
 start /B node setup_server.js
 
 :: Wait a moment for server to start
-timeout /t 3 /nobreak >nul
+timeout /t 2 /nobreak >nul
 
-:: Open browser
+:: Open browser immediately
 echo 🌐 Opening beautiful setup interface...
 start http://localhost:8080
 

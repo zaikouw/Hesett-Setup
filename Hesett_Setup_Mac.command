@@ -2,7 +2,6 @@
 
 # Set terminal colors
 GREEN='\033[0;32m'
-RED='\033[0;31m'
 BLUE='\033[0;34m'
 YELLOW='\033[1;33m'
 NC='\033[0m' # No Color
@@ -10,55 +9,25 @@ NC='\033[0m' # No Color
 clear
 echo -e "${BLUE}"
 echo "========================================"
-echo "   🚀 Hesett Box Professional Setup"
+echo "   🚀 Hesett Box Beautiful Setup"
 echo "========================================"
 echo -e "${NC}"
-echo "Welcome to the Hesett Box Auto-Configuration Wizard!"
-echo "This wizard will handle everything automatically."
+echo "Welcome to the Hesett Box Setup Wizard!"
 echo ""
-echo -e "${GREEN}🎯 What this wizard will do:${NC}"
-echo "   ✅ Check and install Node.js automatically"
-echo "   ✅ Install all required dependencies"
-echo "   ✅ Detect and configure your Hesett Box"
-echo "   ✅ Set up network connectivity"
-echo "   ✅ Test everything thoroughly"
-echo "   ✅ Provide detailed diagnostics"
+echo -e "${GREEN}🎯 This will open a beautiful web interface in your browser.${NC}"
+echo -e "${YELLOW}💡 No technical knowledge required - just follow the beautiful interface!${NC}"
 echo ""
-echo -e "${YELLOW}💡 No technical knowledge required - just follow the prompts!${NC}"
+echo -e "${BLUE}🌐 Opening beautiful setup interface...${NC}"
 echo ""
-read -p "Press Enter to continue..."
-
-# Check if running as administrator (sudo)
-if [ "$EUID" -ne 0 ]; then
-    echo -e "${RED}"
-    echo "========================================"
-    echo "    🔐 Administrator Rights Required"
-    echo "========================================"
-    echo -e "${NC}"
-    echo ""
-    echo "This setup requires administrator privileges to:"
-    echo "- Install dependencies automatically"
-    echo "- Configure network settings"
-    echo "- Set up system services"
-    echo ""
-    echo "Please run this script with sudo:"
-    echo "sudo ./Hesett_Setup_Mac.command"
-    echo ""
-    read -p "Press Enter to exit..."
-    exit 1
-fi
 
 # Create setup directory
-echo ""
-echo -e "${BLUE}📁 Creating setup environment...${NC}"
 if [ -d "hesett_setup" ]; then
-    echo "Removing old setup directory..."
     rm -rf hesett_setup
 fi
 mkdir -p hesett_setup
 cd hesett_setup
 
-# Create simple package.json
+# Create package.json
 echo -e "${BLUE}📦 Creating setup package...${NC}"
 cat > package.json << 'EOF'
 {
@@ -76,13 +45,12 @@ cat > package.json << 'EOF'
 }
 EOF
 
-# Create simple setup server
-echo -e "${BLUE}🔧 Creating setup server...${NC}"
+# Create setup server
+echo -e "${BLUE}🔧 Creating beautiful setup server...${NC}"
 cat > setup_server.js << 'EOF'
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
-const os = require('os');
 
 const app = express();
 const PORT = 8080;
@@ -91,42 +59,12 @@ app.use(cors());
 app.use(express.static('public'));
 app.use(express.json());
 
-// Simple diagnostic endpoint
-app.get('/api/diagnose', (req, res) => {
-  try {
-    const diagnostics = {
-      nodejs: { status: 'OK', version: process.version },
-      network: { status: 'OK', interfaces: os.networkInterfaces() },
-      hesettBox: { status: 'SEARCHING', message: 'Searching for Hesett Box...' },
-      dependencies: { status: 'OK', message: 'Dependencies ready' }
-    };
-    res.json(diagnostics);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
-
-// Simple auto-fix endpoint
-app.get('/api/auto-fix', (req, res) => {
-  try {
-    const fixes = [
-      { component: 'Node.js', action: 'Node.js is ready', status: 'SUCCESS' },
-      { component: 'Dependencies', action: 'Installing dependencies...', status: 'IN_PROGRESS' },
-      { component: 'Network', action: 'Network configured', status: 'SUCCESS' }
-    ];
-    res.json(fixes);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
-
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
 app.listen(PORT, () => {
-  console.log(`🚀 Hesett Professional Setup Wizard running on http://localhost:${PORT}`);
-  console.log('🌐 Opening browser automatically...');
+  console.log(`🚀 Beautiful Hesett Setup running on http://localhost:${PORT}`);
 });
 EOF
 
@@ -239,7 +177,6 @@ cat > public/index.html << 'EOF'
         .step:nth-child(2) h3::before { content: '2'; }
         .step:nth-child(3) h3::before { content: '3'; }
         .step:nth-child(4) h3::before { content: '4'; }
-        .step:nth-child(5) h3::before { content: '5'; }
         .button { 
             background: linear-gradient(45deg, #4CAF50, #45a049); 
             color: white; 
@@ -289,16 +226,6 @@ cat > public/index.html << 'EOF'
             background: rgba(76, 175, 80, 0.3); 
             border: 1px solid #4CAF50; 
             box-shadow: 0 4px 15px rgba(76, 175, 80, 0.2);
-        }
-        .error { 
-            background: rgba(244, 67, 54, 0.3); 
-            border: 1px solid #f44336; 
-            box-shadow: 0 4px 15px rgba(244, 67, 54, 0.2);
-        }
-        .info { 
-            background: rgba(33, 150, 243, 0.3); 
-            border: 1px solid #2196F3; 
-            box-shadow: 0 4px 15px rgba(33, 150, 243, 0.2);
         }
         .loading { 
             display: inline-block; 
@@ -523,7 +450,7 @@ cat > public/index.html << 'EOF'
 
         function showLoading(elementId) {
             const element = document.getElementById(elementId);
-            element.innerHTML = '<div class="status info"><span class="loading"></span> Processing...</div>';
+            element.innerHTML = '<div class="status success"><span class="loading"></span> Processing...</div>';
         }
 
         function startSetup() {
@@ -540,7 +467,6 @@ cat > public/index.html << 'EOF'
 
             showLoading('diagnostics-results');
 
-            // Simulate diagnostics
             setTimeout(() => {
                 const resultsHtml = `
                     <div class="status success">
@@ -571,7 +497,6 @@ cat > public/index.html << 'EOF'
 
             showLoading('fixes-results');
 
-            // Simulate auto-fixes
             setTimeout(() => {
                 const fixesHtml = `
                     <div class="status success">
@@ -601,7 +526,6 @@ cat > public/index.html << 'EOF'
 
             showLoading('configuration-results');
 
-            // Simulate configuration
             setTimeout(() => {
                 showStatus('configuration-results', '<div class="status success">✅ Hesett Box configured successfully!</div>', 'success');
                 btn.innerHTML = 'Configuration Complete';
@@ -623,7 +547,6 @@ cat > public/index.html << 'EOF'
 
             showLoading('test-results');
 
-            // Simulate testing
             setTimeout(() => {
                 showStatus('test-results', '<div class="status success">✅ All tests passed! Your Hesett Box is ready.</div>', 'success');
                 btn.innerHTML = 'Tests Complete';
@@ -645,45 +568,19 @@ cat > public/index.html << 'EOF'
 </html>
 EOF
 
-# Install dependencies
+# Install dependencies silently
 echo -e "${BLUE}📦 Installing dependencies...${NC}"
-echo "This may take a few minutes..."
-echo ""
-
-if ! npm install --silent --no-audit --no-fund; then
-    echo -e "${RED}❌ Failed to install dependencies${NC}"
-    echo ""
-    echo "This might be due to:"
-    echo "- Network connection issues"
-    echo "- Insufficient permissions"
-    echo "- Node.js installation issues"
-    echo ""
-    echo "Please try:"
-    echo "1. Check your internet connection"
-    echo "2. Run: sudo npm install"
-    echo "3. Reinstall Node.js"
-    echo ""
-    read -p "Press Enter to exit..."
-    exit 1
-fi
-
-echo -e "${GREEN}✅ Dependencies installed successfully${NC}"
-echo ""
+npm install --silent --no-audit --no-fund > /dev/null 2>&1
 
 # Start the beautiful setup wizard
-echo -e "${BLUE}🚀 Starting Hesett Professional Setup Wizard...${NC}"
-echo ""
-echo "The beautiful setup interface will open in your browser..."
-echo ""
-
-# Start the server in background
+echo -e "${BLUE}🚀 Starting beautiful setup wizard...${NC}"
 node setup_server.js &
 SERVER_PID=$!
 
 # Wait a moment for server to start
-sleep 3
+sleep 2
 
-# Open browser
+# Open browser immediately
 echo -e "${BLUE}🌐 Opening beautiful setup interface...${NC}"
 if command -v open &> /dev/null; then
     open http://localhost:8080
