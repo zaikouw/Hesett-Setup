@@ -352,9 +352,45 @@ echo         .step-icon {
 echo             font-size: 2em;
 echo             margin-right: 15px;
 echo         }
+echo         .auto-progress {
+echo             position: fixed;
+echo             top: 20px;
+echo             right: 20px;
+echo             background: rgba^(255,255,255,0.1^);
+echo             backdrop-filter: blur^(10px^);
+echo             padding: 15px 20px;
+echo             border-radius: 15px;
+echo             border: 1px solid rgba^(255,255,255,0.2^);
+echo             z-index: 1000;
+echo         }
+echo         .auto-progress h4 {
+echo             color: #4CAF50;
+echo             margin-bottom: 8px;
+echo             font-size: 14px;
+echo         }
+echo         .auto-progress .progress {
+echo             width: 200px;
+echo             height: 8px;
+echo             background-color: rgba^(255,255,255,0.2^);
+echo             border-radius: 4px;
+echo             overflow: hidden;
+echo         }
+echo         .auto-progress .progress-bar {
+echo             height: 100%%;
+echo             background: linear-gradient^(90deg, #4CAF50, #45a049^);
+echo             width: 0%%;
+echo             transition: width 0.5s ease;
+echo             border-radius: 4px;
+echo         }
 echo     ^</style^>
 echo ^</head^>
 echo ^<body^>
+echo     ^<div class="auto-progress" id="auto-progress" style="display: none;"^>
+echo         ^<h4^>🚀 Auto-Setup Progress^</h4^>
+echo         ^<div class="progress"^>
+echo             ^<div class="progress-bar" id="auto-progress-bar"^>^</div^>
+echo         ^</div^>
+echo     ^</div^>
 echo     ^<div class="container"^>
 echo         ^<div class="header"^>
 echo             ^<h1^>🚀 Hesett Box Professional Setup^</h1^>
@@ -432,6 +468,7 @@ echo     ^</div^>
 echo     ^<script^>
 echo         let currentStep = 0;
 echo         const totalSteps = 4;
+echo         let autoProgressInterval;
 echo.
 echo         function updateProgress^(step, progressElement^) {
 echo             const progress = ^(step / totalSteps^) * 100;
@@ -448,9 +485,27 @@ echo             const element = document.getElementById^(elementId^);
 echo             element.innerHTML = '^<div class="status success"^>^<span class="loading"^>^</span^> Processing...^</div^>';
 echo         }
 echo.
+echo         function startAutoProgress() {
+echo             const autoProgress = document.getElementById^('auto-progress'^);
+echo             const autoProgressBar = document.getElementById^('auto-progress-bar'^);
+echo             autoProgress.style.display = 'block';
+echo.
+echo             let progress = 0;
+echo             autoProgressInterval = setInterval^(^() =^> {
+echo                 progress += 1;
+echo                 autoProgressBar.style.width = progress + '%%';
+echo.
+echo                 if ^(progress >= 100^) {
+echo                     clearInterval^(autoProgressInterval^);
+echo                     autoProgress.style.display = 'none';
+echo                 }
+echo             }, 150^);
+echo         }
+echo.
 echo         function startSetup() {
 echo             showStatus^('welcome-status', '^<div class="status success"^>✅ Professional setup started! Let\'s begin with diagnostics.^</div^>', 'success'^);
-echo             setTimeout^(runDiagnostics, 1000^);
+echo             startAutoProgress^(^);
+echo             setTimeout^(runDiagnostics, 500^);
 echo         }
 echo.
 echo         function runDiagnostics() {
@@ -479,8 +534,8 @@ echo                 currentStep = 1;
 echo                 updateProgress^(currentStep, 'diagnose-progress-bar'^);
 echo                 document.getElementById^('fix-btn'^).disabled = false;
 echo.
-echo                 setTimeout^(runAutoFixes, 1000^);
-echo             }, 3000^);
+echo                 setTimeout^(runAutoFixes, 500^);
+echo             }, 1500^);
 echo         }
 echo.
 echo         function runAutoFixes() {
@@ -508,8 +563,8 @@ echo                 currentStep = 2;
 echo                 updateProgress^(currentStep, 'fix-progress-bar'^);
 echo                 document.getElementById^('configure-btn'^).disabled = false;
 echo.
-echo                 setTimeout^(configureHesettBox, 1000^);
-echo             }, 3000^);
+echo                 setTimeout^(configureHesettBox, 500^);
+echo             }, 1500^);
 echo         }
 echo.
 echo         function configureHesettBox() {
@@ -529,8 +584,8 @@ echo                 currentStep = 3;
 echo                 updateProgress^(currentStep, 'configure-progress-bar'^);
 echo                 document.getElementById^('test-btn'^).disabled = false;
 echo.
-echo                 setTimeout^(runTests, 1000^);
-echo             }, 3000^);
+echo                 setTimeout^(runTests, 500^);
+echo             }, 1500^);
 echo         }
 echo.
 echo         function runTests() {
@@ -551,12 +606,12 @@ echo                 updateProgress^(currentStep, 'test-progress-bar'^);
 echo.
 echo                 setTimeout^(^() =^> {
 echo                     document.getElementById^('completion'^).style.display = 'block';
-echo                 }, 1000^);
-echo             }, 3000^);
+echo                 }, 500^);
+echo             }, 1500^);
 echo         }
 echo.
 echo         window.onload = function^(^) {
-echo             setTimeout^(startSetup, 2000^);
+echo             setTimeout^(startSetup, 1000^);
 echo         };
 echo     ^</script^>
 echo ^</body^>
@@ -572,7 +627,7 @@ echo 🚀 Starting beautiful setup wizard...
 start /B node setup_server.js
 
 :: Wait a moment for server to start
-timeout /t 2 /nobreak >nul
+timeout /t 1 /nobreak >nul
 
 :: Open browser immediately
 echo 🌐 Opening beautiful setup interface...

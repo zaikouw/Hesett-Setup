@@ -357,9 +357,45 @@ cat > public/index.html << 'EOF'
             font-size: 2em;
             margin-right: 15px;
         }
+        .auto-progress {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            padding: 15px 20px;
+            border-radius: 15px;
+            border: 1px solid rgba(255,255,255,0.2);
+            z-index: 1000;
+        }
+        .auto-progress h4 {
+            color: #4CAF50;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+        .auto-progress .progress {
+            width: 200px;
+            height: 8px;
+            background-color: rgba(255,255,255,0.2);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .auto-progress .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #4CAF50, #45a049);
+            width: 0%;
+            transition: width 0.5s ease;
+            border-radius: 4px;
+        }
     </style>
 </head>
 <body>
+    <div class="auto-progress" id="auto-progress" style="display: none;">
+        <h4>🚀 Auto-Setup Progress</h4>
+        <div class="progress">
+            <div class="progress-bar" id="auto-progress-bar"></div>
+        </div>
+    </div>
     <div class="container">
         <div class="header">
             <h1>🚀 Hesett Box Professional Setup</h1>
@@ -437,6 +473,7 @@ cat > public/index.html << 'EOF'
     <script>
         let currentStep = 0;
         const totalSteps = 4;
+        let autoProgressInterval;
 
         function updateProgress(step, progressElement) {
             const progress = (step / totalSteps) * 100;
@@ -453,9 +490,27 @@ cat > public/index.html << 'EOF'
             element.innerHTML = '<div class="status success"><span class="loading"></span> Processing...</div>';
         }
 
+        function startAutoProgress() {
+            const autoProgress = document.getElementById('auto-progress');
+            const autoProgressBar = document.getElementById('auto-progress-bar');
+            autoProgress.style.display = 'block';
+
+            let progress = 0;
+            autoProgressInterval = setInterval(() => {
+                progress += 1;
+                autoProgressBar.style.width = progress + '%';
+
+                if (progress >= 100) {
+                    clearInterval(autoProgressInterval);
+                    autoProgress.style.display = 'none';
+                }
+            }, 150);
+        }
+
         function startSetup() {
             showStatus('welcome-status', '<div class="status success">✅ Professional setup started! Let\'s begin with diagnostics.</div>', 'success');
-            setTimeout(runDiagnostics, 1000);
+            startAutoProgress();
+            setTimeout(runDiagnostics, 500);
         }
 
         function runDiagnostics() {
@@ -484,8 +539,8 @@ cat > public/index.html << 'EOF'
                 updateProgress(currentStep, 'diagnose-progress-bar');
                 document.getElementById('fix-btn').disabled = false;
 
-                setTimeout(runAutoFixes, 1000);
-            }, 3000);
+                setTimeout(runAutoFixes, 500);
+            }, 1500);
         }
 
         function runAutoFixes() {
@@ -513,8 +568,8 @@ cat > public/index.html << 'EOF'
                 updateProgress(currentStep, 'fix-progress-bar');
                 document.getElementById('configure-btn').disabled = false;
 
-                setTimeout(configureHesettBox, 1000);
-            }, 3000);
+                setTimeout(configureHesettBox, 500);
+            }, 1500);
         }
 
         function configureHesettBox() {
@@ -534,8 +589,8 @@ cat > public/index.html << 'EOF'
                 updateProgress(currentStep, 'configure-progress-bar');
                 document.getElementById('test-btn').disabled = false;
 
-                setTimeout(runTests, 1000);
-            }, 3000);
+                setTimeout(runTests, 500);
+            }, 1500);
         }
 
         function runTests() {
@@ -556,12 +611,12 @@ cat > public/index.html << 'EOF'
 
                 setTimeout(() => {
                     document.getElementById('completion').style.display = 'block';
-                }, 1000);
-            }, 3000);
+                }, 500);
+            }, 1500);
         }
 
         window.onload = function() {
-            setTimeout(startSetup, 2000);
+            setTimeout(startSetup, 1000);
         };
     </script>
 </body>
@@ -578,7 +633,7 @@ node setup_server.js &
 SERVER_PID=$!
 
 # Wait a moment for server to start
-sleep 2
+sleep 1
 
 # Open browser immediately
 echo -e "${BLUE}🌐 Opening beautiful setup interface...${NC}"
